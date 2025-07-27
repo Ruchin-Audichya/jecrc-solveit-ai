@@ -16,7 +16,7 @@ export default function TicketDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { tickets, messages, updateTicketStatus, assignTicket, addMessage, fetchMessages } = useTickets();
+  const { tickets, messages, updateTicketStatus, assignTicket, addMessage, fetchMessages, verifyAndCloseTicket } = useTickets();
   const { toast } = useToast();
   
   const [newMessage, setNewMessage] = useState('');
@@ -47,7 +47,8 @@ export default function TicketDetail() {
 
   const canEdit = user?.role === 'admin' || 
     (user?.role === 'resolver' && ticket.assignedTo === user.id) ||
-    (user?.role === 'student' && ticket.createdBy === user.id);
+    (user?.role === 'student' && ticket.createdBy === user.id) ||
+    (user?.role === 'staff' && ticket.createdBy === user.id);
 
   const handleStatusChange = async (newStatus: Ticket['status']) => {
     try {
@@ -75,10 +76,18 @@ export default function TicketDetail() {
         ticketId: ticket.id,
         userId: user.id,
         message: newMessage,
-        isInternal: isInternal && user.role !== 'student',
+        isInternal: isInternal && user.role !== 'student' && user.role !== 'staff',
       });
 
       setNewMessage('');
+    } catch (error) {
+      // Error handling is done in the hook
+    }
+  };
+
+  const handleVerifyAndClose = async () => {
+    try {
+      await verifyAndCloseTicket(ticket.id);
     } catch (error) {
       // Error handling is done in the hook
     }
@@ -283,6 +292,27 @@ export default function TicketDetail() {
                       </SelectContent>
                     </Select>
                   </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {/* Verify & Close Action for Ticket Creator */}
+            {ticket.status === 'resolved' && ticket.createdBy === user?.id && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Ticket Resolution</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    This ticket has been marked as resolved. Please verify that your issue has been completely addressed.
+                  </p>
+                  <Button 
+                    onClick={handleVerifyAndClose}
+                    className="w-full"
+                    variant="default"
+                  >
+                    Verify & Close Ticket
+                  </Button>
                 </CardContent>
               </Card>
             )}

@@ -46,9 +46,9 @@ const Header = () => {
                 </Link>
               </>
             )}
-            {(user?.role === 'student' || user?.role === 'admin') && (
-              <Link to="/create-ticket" className="font-lato text-foreground hover:text-primary transition-colors">
-                Create Ticket
+            {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
+              <Link to="/create-ticket" className="font-lato bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md transition-colors font-medium">
+                + Create Ticket
               </Link>
             )}
           </nav>
@@ -79,6 +79,13 @@ const Header = () => {
 
             {/* Mobile User Actions */}
             <div className="md:hidden flex items-center space-x-2">
+              {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
+                <Link to="/create-ticket">
+                  <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                    + Ticket
+                  </Button>
+                </Link>
+              )}
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
               </Button>

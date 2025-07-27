@@ -22,7 +22,7 @@ export default function Dashboard() {
   const userTickets = user?.role === 'admin' 
     ? tickets 
     : tickets.filter(ticket => 
-        user?.role === 'student' 
+        (user?.role === 'student' || user?.role === 'staff') 
           ? ticket.createdBy === user.id
           : ticket.assignedTo === user.id || !ticket.assignedTo
       );
@@ -65,10 +65,10 @@ export default function Dashboard() {
             <p className="text-muted-foreground mt-1">
               {user?.role === 'admin' && 'Manage all tickets and system overview'}
               {user?.role === 'resolver' && 'Review and resolve assigned tickets'}
-              {user?.role === 'student' && 'Track your submitted tickets and create new ones'}
+              {(user?.role === 'student' || user?.role === 'staff') && 'Track your submitted tickets and create new ones'}
             </p>
           </div>
-          {(user?.role === 'student' || user?.role === 'admin') && (
+                      {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
             <Link to="/create-ticket">
               <Button className="gap-2">
                 <Plus className="h-4 w-4" />
@@ -124,14 +124,14 @@ export default function Dashboard() {
             <CardTitle>
               {user?.role === 'admin' && 'All Tickets'}
               {user?.role === 'resolver' && 'Assigned Tickets'}
-              {user?.role === 'student' && 'My Tickets'}
+              {(user?.role === 'student' || user?.role === 'staff') && 'My Tickets'}
             </CardTitle>
           </CardHeader>
           <CardContent>
             {userTickets.length === 0 ? (
               <div className="text-center py-8 text-muted-foreground">
                 <p>No tickets found.</p>
-                {user?.role === 'student' && (
+                {(user?.role === 'student' || user?.role === 'staff') && (
                   <Link to="/create-ticket">
                     <Button className="mt-4" variant="outline">
                       Create Your First Ticket

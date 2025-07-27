@@ -19,14 +19,16 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  XCircle
+  XCircle,
+  RefreshCw,
+  Plus
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { Ticket, TicketStatus, TicketPriority, TicketCategory } from '@/types';
 
 export default function EnhancedDashboard() {
   const { user, profile } = useAuth();
-  const { tickets, getTicketsByUser, getTicketsByAssignee, getTicketsByStatus, isLoading } = useTickets();
+  const { tickets, getTicketsByUser, getTicketsByAssignee, getTicketsByStatus, isLoading, fetchTickets } = useTickets();
   const { getUserById } = useUsers();
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,15 +45,24 @@ export default function EnhancedDashboard() {
     );
   }
 
-  // Get tickets based on user role
+  // Get tickets based on user role - Single source of truth for live data
   const getUserTickets = () => {
+    if (!user?.id) return [];
+    
     switch (user?.role) {
       case 'admin':
+        // Admin: Fetch all tickets from database
         return tickets;
       case 'resolver':
-        return [...getTicketsByAssignee(user.id), ...tickets.filter(t => !t.assignedTo && t.category === profile?.department)];
+        // Resolver: Fetch assigned tickets OR unassigned tickets matching department
+        return tickets.filter(ticket => 
+          ticket.assignedTo === user.id || 
+          (ticket.assignedTo === null && ticket.category === profile?.department)
+        );
       case 'student':
-        return getTicketsByUser(user.id);
+      case 'staff':
+        // Student/Staff: Fetch only tickets where createdBy matches user ID
+        return tickets.filter(ticket => ticket.createdBy === user.id);
       default:
         return [];
     }
@@ -128,14 +139,25 @@ export default function EnhancedDashboard() {
         {/* Enhanced Header */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-foreground flex items-center gap-2">
-              <TicketIcon className="h-8 w-8 text-primary" />
-              {user?.role === 'admin' && 'System Overview'}
-              {user?.role === 'resolver' && 'My Assignments'}
-              {user?.role === 'student' && 'My Tickets'}
+            <h1 className="text-3xl font-bold text-foreground flex items-center gap-3">
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <TicketIcon className="h-6 w-6 text-primary-foreground" />
+              </div>
+              <span>
+                {user?.role === 'admin' && 'System Overview'}
+                {user?.role === 'resolver' && 'My Assignments'}
+                {(user?.role === 'student' || user?.role === 'staff') && 'My Tickets'}
+              </span>
+              <span className="text-primary">•</span>
+              <span className="text-xl text-primary font-poppins">JECRC SolveIt</span>
             </h1>
             <p className="text-muted-foreground mt-1">
-              Welcome back, {profile?.name || user?.email} • {profile?.role === 'admin' ? 'System Administrator' : profile?.role === 'resolver' ? `${profile.department} Resolver` : 'Student'}
+              Welcome back, {profile?.name || user?.email} • {
+                profile?.role === 'admin' ? 'System Administrator' : 
+                profile?.role === 'resolver' ? `${profile.department} Resolver` : 
+                profile?.role === 'staff' ? 'Staff Member' :
+                'Student'
+              }
             </p>
           </div>
           <div className="flex gap-2">
@@ -147,15 +169,32 @@ export default function EnhancedDashboard() {
                 </Button>
               </Link>
             )}
-            {(user?.role === 'student' || user?.role === 'admin') && (
+            {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
               <Link to="/create-ticket">
-                <Button className="gap-2">
-                  Create Ticket
-                  <TicketIcon className="h-4 w-4" />
+                <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg">
+                  <Plus className="h-4 w-4" />
+                  Create New Ticket
                 </Button>
               </Link>
             )}
           </div>
+        </div>
+
+        {/* Real-time Status Indicator */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+            Connected to Live Database • {userTickets.length} tickets loaded
+          </div>
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => fetchTickets()}
+            className="gap-2 text-muted-foreground hover:text-foreground"
+          >
+            <RefreshCw className="h-4 w-4" />
+            Refresh
+          </Button>
         </div>
 
         {/* Enhanced Stats Cards */}
@@ -313,9 +352,12 @@ export default function EnhancedDashboard() {
                     ? 'Try adjusting your filters or search query.'
                     : 'No tickets match your current view.'}
                 </p>
-                {user?.role === 'student' && (
+                {(user?.role === 'student' || user?.role === 'staff') && (
                   <Link to="/create-ticket">
-                    <Button>Create Your First Ticket</Button>
+                    <Button className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      Create Your First Ticket
+                    </Button>
                   </Link>
                 )}
               </div>

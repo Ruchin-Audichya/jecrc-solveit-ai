@@ -434,6 +434,48 @@ export function useTickets() {
     return tickets.filter(ticket => ticket.category === category);
   };
 
+  const verifyAndCloseTicket = async (ticketId: string) => {
+    try {
+      const { error } = await supabase
+        .from('tickets')
+        .update({ status: 'closed' })
+        .eq('id', ticketId);
+
+      if (error) {
+        console.error('Error closing ticket:', error);
+        toast({
+          title: "Error closing ticket",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Log activity
+      await supabase.rpc('log_activity', {
+        p_action: 'verify_and_close',
+        p_resource_type: 'ticket',
+        p_resource_id: ticketId,
+        p_details: { status: 'closed' }
+      });
+
+      setTickets(prev =>
+        prev.map(ticket =>
+          ticket.id === ticketId
+            ? { ...ticket, status: 'closed' as const, updatedAt: new Date().toISOString() }
+            : ticket
+        )
+      );
+
+      toast({
+        title: "Ticket closed",
+        description: "Ticket has been verified and closed successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error in verifyAndCloseTicket:', error);
+    }
+  };
+
   return {
     tickets,
     messages,
@@ -446,6 +488,7 @@ export function useTickets() {
     assignTicket,
     addMessage,
     deleteTicket,
+    verifyAndCloseTicket,
     getTicketById,
     getTicketsByUser,
     getTicketsByAssignee,
