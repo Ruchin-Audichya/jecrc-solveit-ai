@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ArrowLeft, Clock, User, MapPin, AlertCircle, MessageSquare, Send } from 'lucide-react';
 import { Ticket, TicketMessage } from '@/types';
 import { useToast } from '@/hooks/use-toast';
+import ActivityLogViewer from '@/components/ActivityLogViewer';
 
 export default function TicketDetail() {
   const { id } = useParams<{ id: string }>();
@@ -313,6 +314,9 @@ export default function TicketDetail() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Activity Log */}
+            <ActivityLogViewer ticketId={ticket.id} maxHeight="300px" />
           </div>
         </div>
       </div>

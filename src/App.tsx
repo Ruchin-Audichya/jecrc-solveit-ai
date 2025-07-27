@@ -12,6 +12,7 @@ import EnhancedDashboard from "./pages/EnhancedDashboard";
 import CreateTicket from "./pages/CreateTicket";
 import TicketDetail from "./pages/TicketDetail";
 import AdminPortal from "./pages/AdminPortal";
+import SystemLogs from "./pages/SystemLogs";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -93,6 +94,11 @@ const App = () => (
             <Route path="/admin" element={
               <ProtectedRoute>
                 <AdminPortal />
+              </ProtectedRoute>
+            } />
+            <Route path="/logs" element={
+              <ProtectedRoute>
+                <SystemLogs />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />

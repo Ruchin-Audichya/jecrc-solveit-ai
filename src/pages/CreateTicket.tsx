@@ -8,9 +8,11 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import FileUploadZone from '@/components/FileUploadZone';
+import { useFileUpload } from '@/hooks/useFileUpload';
 import { useNavigate } from 'react-router-dom';
 import { TicketCategory, TicketPriority } from '@/types';
-import { ArrowLeft, Upload } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 export default function CreateTicket() {
   const [title, setTitle] = useState('');
@@ -21,6 +23,7 @@ export default function CreateTicket() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   
   const { user } = useAuth();
+  const { uploadedFiles } = useFileUpload();
   const { createTicket } = useTickets();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -40,6 +43,7 @@ export default function CreateTicket() {
         location,
         status: 'open',
         createdBy: user.id,
+        attachments: uploadedFiles.map(file => file.url),
       });
 
       toast({
@@ -152,15 +156,7 @@ export default function CreateTicket() {
 
               <div className="space-y-2">
                 <Label>Attachments</Label>
-                <div className="border-2 border-dashed border-border rounded-lg p-8 text-center">
-                  <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">
-                    Drag and drop files here, or click to browse
-                  </p>
-                  <p className="text-xs text-muted-foreground mt-1">
-                    Supports images, videos, and PDFs (Max 10MB)
-                  </p>
-                </div>
+                <FileUploadZone maxFiles={5} />
               </div>
 
               <div className="flex gap-4 pt-4">

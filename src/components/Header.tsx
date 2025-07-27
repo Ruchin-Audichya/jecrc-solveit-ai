@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
-import { Bell, User, LogOut } from "lucide-react";
+import NotificationBell from "@/components/NotificationBell";
+import { User, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Header = () => {
@@ -36,9 +37,14 @@ const Header = () => {
               Dashboard
             </Link>
             {user?.role === 'admin' && (
-              <Link to="/admin" className="font-lato text-foreground hover:text-primary transition-colors">
-                Admin Portal
-              </Link>
+              <>
+                <Link to="/admin" className="font-lato text-foreground hover:text-primary transition-colors">
+                  Admin Portal
+                </Link>
+                <Link to="/logs" className="font-lato text-foreground hover:text-primary transition-colors">
+                  System Logs
+                </Link>
+              </>
             )}
             {(user?.role === 'student' || user?.role === 'admin') && (
               <Link to="/create-ticket" className="font-lato text-foreground hover:text-primary transition-colors">
@@ -50,13 +56,8 @@ const Header = () => {
           {/* User Actions */}
           <div className="flex items-center space-x-4">
             {/* Notifications */}
-            <Button variant="ghost" size="icon" className="relative">
-              <Bell className="h-5 w-5" />
-              <span className="absolute -top-1 -right-1 h-4 w-4 bg-error rounded-full text-xs text-white flex items-center justify-center">
-                3
-              </span>
-            </Button>
-
+            <NotificationBell />
+            
             {/* User Profile & Info */}
             <div className="hidden md:flex items-center space-x-3">
               <div className="text-right">
