@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Link } from "react-router-dom";
 import { Plus, Search, Clock, CheckCircle } from "lucide-react";
 
 const HeroSection = () => {
@@ -19,14 +20,18 @@ const HeroSection = () => {
           
           {/* Quick Actions */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Button size="lg" className="font-poppins">
-              <Plus className="mr-2 h-5 w-5" />
-              Create New Ticket
-            </Button>
-            <Button variant="outline" size="lg" className="font-poppins">
-              <Search className="mr-2 h-5 w-5" />
-              Track Existing Ticket
-            </Button>
+            <Link to="/login">
+              <Button size="lg" className="font-poppins">
+                <Plus className="mr-2 h-5 w-5" />
+                Create New Ticket
+              </Button>
+            </Link>
+            <Link to="/login">
+              <Button variant="outline" size="lg" className="font-poppins">
+                <Search className="mr-2 h-5 w-5" />
+                Sign In to Track Tickets
+              </Button>
+            </Link>
           </div>
         </div>
 

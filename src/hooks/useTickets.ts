@@ -97,6 +97,16 @@ export function useTickets() {
     );
   };
 
+  const updateTicketPriority = (ticketId: string, priority: Ticket['priority']) => {
+    setTickets(prev =>
+      prev.map(ticket =>
+        ticket.id === ticketId
+          ? { ...ticket, priority, updatedAt: new Date().toISOString() }
+          : ticket
+      )
+    );
+  };
+
   const assignTicket = (ticketId: string, assignedTo: string) => {
     setTickets(prev =>
       prev.map(ticket =>
@@ -116,13 +126,45 @@ export function useTickets() {
     setMessages(prev => [...prev, newMessage]);
   };
 
+  const deleteTicket = (ticketId: string) => {
+    setTickets(prev => prev.filter(ticket => ticket.id !== ticketId));
+    setMessages(prev => prev.filter(message => message.ticketId !== ticketId));
+  };
+
+  const getTicketById = (id: string) => {
+    return tickets.find(ticket => ticket.id === id);
+  };
+
+  const getTicketsByUser = (userId: string) => {
+    return tickets.filter(ticket => ticket.createdBy === userId);
+  };
+
+  const getTicketsByAssignee = (userId: string) => {
+    return tickets.filter(ticket => ticket.assignedTo === userId);
+  };
+
+  const getTicketsByStatus = (status: Ticket['status']) => {
+    return tickets.filter(ticket => ticket.status === status);
+  };
+
+  const getTicketsByCategory = (category: Ticket['category']) => {
+    return tickets.filter(ticket => ticket.category === category);
+  };
+
   return {
     tickets,
     messages,
     isLoading,
     createTicket,
     updateTicketStatus,
+    updateTicketPriority,
     assignTicket,
     addMessage,
+    deleteTicket,
+    getTicketById,
+    getTicketsByUser,
+    getTicketsByAssignee,
+    getTicketsByStatus,
+    getTicketsByCategory,
   };
 }

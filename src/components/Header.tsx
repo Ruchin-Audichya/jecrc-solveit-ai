@@ -35,6 +35,11 @@ const Header = () => {
             <Link to="/dashboard" className="font-lato text-foreground hover:text-primary transition-colors">
               Dashboard
             </Link>
+            {user?.role === 'admin' && (
+              <Link to="/admin" className="font-lato text-foreground hover:text-primary transition-colors">
+                Admin Portal
+              </Link>
+            )}
             {(user?.role === 'student' || user?.role === 'admin') && (
               <Link to="/create-ticket" className="font-lato text-foreground hover:text-primary transition-colors">
                 Create Ticket

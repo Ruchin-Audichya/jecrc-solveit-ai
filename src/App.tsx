@@ -8,8 +8,10 @@ import Header from "@/components/Header";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
+import EnhancedDashboard from "./pages/EnhancedDashboard";
 import CreateTicket from "./pages/CreateTicket";
 import TicketDetail from "./pages/TicketDetail";
+import AdminPortal from "./pages/AdminPortal";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -75,7 +77,7 @@ const App = () => (
             } />
             <Route path="/dashboard" element={
               <ProtectedRoute>
-                <Dashboard />
+                <EnhancedDashboard />
               </ProtectedRoute>
             } />
             <Route path="/create-ticket" element={
@@ -86,6 +88,11 @@ const App = () => (
             <Route path="/ticket/:id" element={
               <ProtectedRoute>
                 <TicketDetail />
+              </ProtectedRoute>
+            } />
+            <Route path="/admin" element={
+              <ProtectedRoute>
+                <AdminPortal />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
