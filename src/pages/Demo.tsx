@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
+import { supabase } from '@/integrations/supabase/client';
+import { setupDemoEnvironment } from '@/utils/demoData';
 
 export default function Demo() {
   const [isLoading, setIsLoading] = useState<string | null>(null);
@@ -36,22 +38,86 @@ export default function Demo() {
     }
   ];
 
+  const createDemoAccount = async (email: string, role: string) => {
+    try {
+      // Create the demo account
+      const { data, error: signUpError } = await supabase.auth.signUp({
+        email,
+        password: 'password123',
+        options: {
+          data: {
+            name: `Demo ${role}`,
+          }
+        }
+      });
+
+      if (signUpError) {
+        // If account already exists, that's fine
+        if (signUpError.message.includes('already registered')) {
+          return { success: true, accountExists: true };
+        }
+        throw signUpError;
+      }
+
+      return { success: true, accountExists: false };
+    } catch (error) {
+      console.error('Error creating demo account:', error);
+      return { success: false, error };
+    }
+  };
+
   const handleDemoLogin = async (email: string, role: string) => {
     setIsLoading(email);
     
     try {
+      // Try to sign in first
       const { error } = await signIn(email, 'password123');
-      if (error) throw error;
       
+      if (error && error.message.includes('Invalid login credentials')) {
+        // Account doesn't exist, create it
+        toast({
+          title: 'Setting up Demo Account',
+          description: 'Creating demo account for you...',
+        });
+
+        const result = await createDemoAccount(email, role);
+        if (!result.success) {
+          throw new Error('Failed to create demo account');
+        }
+
+        if (!result.accountExists) {
+          toast({
+            title: 'Demo Account Created',
+            description: 'Please check your email to verify your account, then try logging in again.',
+            variant: 'default',
+          });
+          return;
+        }
+
+        // Try signing in again if account existed
+        const { error: retryError } = await signIn(email, 'password123');
+        if (retryError) {
+          throw retryError;
+        }
+      } else if (error) {
+        throw error;
+      }
+      
+      // Set up demo environment with sample data
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await setupDemoEnvironment(user.id, role.toLowerCase());
+      }
+
       toast({
         title: `Welcome to ${role} Portal`,
-        description: 'Demo login successful!',
+        description: 'Demo login successful! Sample tickets have been created for you to explore.',
       });
       navigate('/dashboard');
-    } catch (error) {
+    } catch (error: any) {
       toast({
         title: 'Demo Login Failed',
-        description: 'Please try again or contact support.',
+        description: error.message || 'Please try again or contact support.',
         variant: 'destructive',
       });
     } finally {
@@ -72,9 +138,15 @@ export default function Demo() {
           <p className="text-muted-foreground mb-4">
             Test different user roles and features
           </p>
-          <Badge variant="secondary" className="mb-6">
-            All accounts use password: password123
-          </Badge>
+          <div className="space-y-2 mb-6">
+            <Badge variant="secondary">
+              All accounts use password: password123
+            </Badge>
+            <div className="text-sm text-muted-foreground">
+              <p>Demo accounts will be created automatically on first use.</p>
+              <p>If email verification is required, check your email inbox.</p>
+            </div>
+          </div>
         </div>
 
         <div className="grid md:grid-cols-3 gap-6 mb-6">
@@ -118,20 +190,42 @@ export default function Demo() {
           ))}
         </div>
 
-        <div className="text-center">
-          <Button
-            variant="outline"
-            onClick={() => navigate('/auth')}
-            className="mr-4"
-          >
-            Real Sign Up
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => navigate('/auth?mode=signin')}
-          >
-            Real Sign In
-          </Button>
+        <div className="text-center space-y-4">
+          <div className="p-4 bg-muted rounded-lg">
+            <h3 className="font-semibold mb-2">Manual Demo Account Setup</h3>
+            <p className="text-sm text-muted-foreground mb-3">
+              IT Team: You can also create accounts manually with these credentials
+            </p>
+            <div className="grid md:grid-cols-3 gap-2 text-xs">
+              <div>
+                <strong>Student:</strong> student@jecrcu.edu.in
+              </div>
+              <div>
+                <strong>Resolver:</strong> resolver@jecrcu.edu.in
+              </div>
+              <div>
+                <strong>Admin:</strong> admin@jecrcu.edu.in
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground mt-2">
+              Password for all: password123
+            </p>
+          </div>
+          
+          <div className="flex justify-center gap-4">
+            <Button
+              variant="outline"
+              onClick={() => navigate('/auth')}
+            >
+              Manual Sign Up
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate('/auth?mode=signin')}
+            >
+              Manual Sign In
+            </Button>
+          </div>
         </div>
       </div>
     </div>
