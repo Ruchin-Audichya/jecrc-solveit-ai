@@ -1,13 +1,17 @@
 import { Button } from "@/components/ui/button";
-import { Bell, User, Menu } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
+import { Bell, User, LogOut } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Header = () => {
+  const { user, logout } = useAuth();
+
   return (
     <header className="bg-white border-b border-border shadow-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Title */}
-          <div className="flex items-center space-x-4">
+          <Link to="/dashboard" className="flex items-center space-x-4">
             <div className="flex items-center space-x-3">
               {/* JECRC Logo Placeholder */}
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
@@ -24,22 +28,18 @@ const Header = () => {
                 <p className="text-xs font-lato text-muted-foreground">University Grievance System</p>
               </div>
             </div>
-          </div>
+          </Link>
 
           {/* Navigation - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
-            <a href="#" className="font-lato text-foreground hover:text-primary transition-colors">
+            <Link to="/dashboard" className="font-lato text-foreground hover:text-primary transition-colors">
               Dashboard
-            </a>
-            <a href="#" className="font-lato text-foreground hover:text-primary transition-colors">
-              My Tickets
-            </a>
-            <a href="#" className="font-lato text-foreground hover:text-primary transition-colors">
-              Create Ticket
-            </a>
-            <a href="#" className="font-lato text-foreground hover:text-primary transition-colors">
-              FAQ
-            </a>
+            </Link>
+            {(user?.role === 'student' || user?.role === 'admin') && (
+              <Link to="/create-ticket" className="font-lato text-foreground hover:text-primary transition-colors">
+                Create Ticket
+              </Link>
+            )}
           </nav>
 
           {/* User Actions */}
@@ -52,15 +52,39 @@ const Header = () => {
               </span>
             </Button>
 
-            {/* User Profile */}
-            <Button variant="ghost" size="icon">
-              <User className="h-5 w-5" />
-            </Button>
+            {/* User Profile & Info */}
+            <div className="hidden md:flex items-center space-x-3">
+              <div className="text-right">
+                <p className="text-sm font-medium">{user?.name}</p>
+                <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
+              </div>
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={logout}
+                title="Logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
 
-            {/* Mobile Menu */}
-            <Button variant="ghost" size="icon" className="md:hidden">
-              <Menu className="h-5 w-5" />
-            </Button>
+            {/* Mobile User Actions */}
+            <div className="md:hidden flex items-center space-x-2">
+              <Button variant="ghost" size="icon">
+                <User className="h-5 w-5" />
+              </Button>
+              <Button 
+                variant="ghost" 
+                size="icon"
+                onClick={logout}
+                title="Logout"
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </div>
       </div>
