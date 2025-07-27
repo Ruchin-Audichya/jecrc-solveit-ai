@@ -188,7 +188,7 @@ export default function EnhancedDashboard() {
             )}
             {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
               <Link to="/create-ticket">
-                <Button className="gap-2 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 shadow-lg">
+                <Button className="gap-2 jecrc-gradient hover:opacity-90 text-white shadow-lg font-semibold">
                   <Plus className="h-4 w-4" />
                   Create New Ticket
                 </Button>
@@ -374,8 +374,8 @@ export default function EnhancedDashboard() {
                 </p>
                 {(user?.role === 'student' || user?.role === 'staff') && (
                   <Link to="/create-ticket">
-                    <Button className="gap-2">
-                      <Plus className="h-4 w-4" />
+                    <Button className="gap-2 jecrc-btn-primary px-6 py-3 text-base">
+                      <Plus className="h-5 w-5" />
                       Create Your First Ticket
                     </Button>
                   </Link>
@@ -390,7 +390,7 @@ export default function EnhancedDashboard() {
                   // Resolver view with action buttons
                   if (user?.role === 'resolver') {
                     return (
-                      <Card key={ticket.id} className="border hover:border-primary/20 transition-all duration-200">
+                      <Card key={ticket.id} className="jecrc-card-hover jecrc-border-accent">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">
@@ -466,7 +466,7 @@ export default function EnhancedDashboard() {
                   // Standard view for students, staff, and admin
                   return (
                     <Link key={ticket.id} to={`/ticket/${ticket.id}`}>
-                      <Card className="hover:bg-accent transition-all duration-200 cursor-pointer border hover:border-primary/20">
+                      <Card className="jecrc-card-hover cursor-pointer jecrc-border-accent hover:bg-accent/50">
                         <CardContent className="p-6">
                           <div className="flex items-start justify-between">
                             <div className="flex-1 min-w-0">

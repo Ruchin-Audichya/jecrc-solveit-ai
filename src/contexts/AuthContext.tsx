@@ -7,10 +7,20 @@ interface Profile {
   id: string;
   user_id: string;
   name: string;
-  role: 'student' | 'resolver' | 'admin';
+  role: 'student' | 'staff' | 'resolver' | 'admin';
   department?: string;
   created_at: string;
   updated_at: string;
+}
+
+interface SignUpData {
+  email: string;
+  password: string;
+  name: string;
+  role: string;
+  rollNumber?: string;
+  course?: string;
+  year?: string;
 }
 
 interface AuthContextType {
@@ -18,7 +28,7 @@ interface AuthContextType {
   session: Session | null;
   profile: Profile | null;
   isLoading: boolean;
-  signUp: (email: string, password: string, name: string, role?: string) => Promise<{ error: any }>;
+  signUp: (signUpData: SignUpData) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<{ error: any }>;
   signOut: () => Promise<void>;
   updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
@@ -98,19 +108,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => subscription.unsubscribe();
   }, []);
 
-  const signUp = async (email: string, password: string, name: string, role: string = 'student') => {
+  const signUp = async (signUpData: SignUpData) => {
     try {
       setIsLoading(true);
       const redirectUrl = `${window.location.origin}/`;
       
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
+      const { data: authData, error } = await supabase.auth.signUp({
+        email: signUpData.email,
+        password: signUpData.password,
         options: {
           emailRedirectTo: redirectUrl,
           data: {
-            name: name,
-            role: role
+            name: signUpData.name,
+            role: signUpData.role
           }
         }
       });
@@ -121,12 +131,39 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           description: error.message,
           variant: "destructive",
         });
-      } else {
-        toast({
-          title: "Account created successfully!",
-          description: "You can now sign in with your credentials.",
-        });
+        return { error };
       }
+
+      // If user was created successfully, create detailed profile
+      if (authData.user) {
+        // Wait a moment for the auth user to be fully created
+        setTimeout(async () => {
+          try {
+            const profileData = {
+              user_id: authData.user!.id,
+              name: signUpData.name,
+              role: signUpData.role as 'student' | 'staff' | 'resolver' | 'admin',
+              department: signUpData.course || signUpData.rollNumber || 'General',
+              // Store additional signup data in a JSON field or separate fields as needed
+            };
+
+            const { error: profileError } = await supabase
+              .from('profiles')
+              .upsert(profileData);
+
+            if (profileError) {
+              console.error('Error creating detailed profile:', profileError);
+            }
+          } catch (profileError) {
+            console.error('Error in profile creation:', profileError);
+          }
+        }, 1000);
+      }
+
+      toast({
+        title: "Account created successfully!",
+        description: "You can now sign in with your credentials.",
+      });
 
       return { error };
     } catch (error: any) {

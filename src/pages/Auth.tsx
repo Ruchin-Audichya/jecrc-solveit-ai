@@ -58,7 +58,15 @@ export default function Auth() {
     setSignUpLoading(true);
     
     try {
-      const { error } = await signUp(signUpData.email, signUpData.password, signUpData.name, signUpData.role);
+      const { error } = await signUp({
+        email: signUpData.email,
+        password: signUpData.password,
+        name: signUpData.name,
+        role: signUpData.role,
+        rollNumber: signUpData.rollNumber,
+        course: signUpData.course,
+        year: signUpData.year
+      });
       if (!error) {
         // Clear form and switch to sign in tab
         setSignUpData({
