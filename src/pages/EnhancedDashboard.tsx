@@ -25,7 +25,7 @@ import { Link } from 'react-router-dom';
 import { Ticket, TicketStatus, TicketPriority, TicketCategory } from '@/types';
 
 export default function EnhancedDashboard() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { tickets, getTicketsByUser, getTicketsByAssignee, getTicketsByStatus, isLoading } = useTickets();
   const { getUserById } = useUsers();
   
@@ -49,7 +49,7 @@ export default function EnhancedDashboard() {
       case 'admin':
         return tickets;
       case 'resolver':
-        return [...getTicketsByAssignee(user.id), ...tickets.filter(t => !t.assignedTo && t.category === user.department)];
+        return [...getTicketsByAssignee(user.id), ...tickets.filter(t => !t.assignedTo && t.category === profile?.department)];
       case 'student':
         return getTicketsByUser(user.id);
       default:
@@ -135,7 +135,7 @@ export default function EnhancedDashboard() {
               {user?.role === 'student' && 'My Tickets'}
             </h1>
             <p className="text-muted-foreground mt-1">
-              Welcome back, {user?.name} • {user?.role === 'admin' ? 'System Administrator' : user?.role === 'resolver' ? `${user.department} Resolver` : 'Student'}
+              Welcome back, {profile?.name || user?.email} • {profile?.role === 'admin' ? 'System Administrator' : profile?.role === 'resolver' ? `${profile.department} Resolver` : 'Student'}
             </p>
           </div>
           <div className="flex gap-2">

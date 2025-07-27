@@ -8,7 +8,7 @@ import { Link } from 'react-router-dom';
 import { Ticket } from '@/types';
 
 export default function Dashboard() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { tickets, isLoading } = useTickets();
 
   if (isLoading) {
@@ -60,7 +60,7 @@ export default function Dashboard() {
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-foreground">
-              Welcome back, {user?.name}
+              Welcome back, {profile?.name || user?.email}
             </h1>
             <p className="text-muted-foreground mt-1">
               {user?.role === 'admin' && 'Manage all tickets and system overview'}

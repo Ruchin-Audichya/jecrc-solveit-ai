@@ -29,12 +29,12 @@ import {
 import { Navigate } from 'react-router-dom';
 
 export default function AdminPortal() {
-  const { user } = useAuth();
+  const { user, profile } = useAuth();
   const { users, createUser, updateUser, deleteUser, getUsersByRole, isLoading } = useUsers();
   const { tickets } = useTickets();
   const { toast } = useToast();
   
-  const [selectedUser, setSelectedUser] = useState<User | null>(null);
+  const [selectedUser, setSelectedUser] = useState<any>(null);
   const [isCreateUserOpen, setIsCreateUserOpen] = useState(false);
   const [isEditUserOpen, setIsEditUserOpen] = useState(false);
   
@@ -47,7 +47,7 @@ export default function AdminPortal() {
   });
 
   // Redirect if not admin
-  if (user?.role !== 'admin') {
+  if (profile?.role !== 'admin') {
     return <Navigate to="/dashboard" replace />;
   }
 
@@ -88,8 +88,8 @@ export default function AdminPortal() {
 
     try {
       createUser({
+        user_id: '', // This will need to be handled by the actual auth system
         name: newUserForm.name,
-        email: newUserForm.email,
         role: newUserForm.role as UserRole,
         department: newUserForm.department || undefined,
       });
@@ -406,14 +406,14 @@ export default function AdminPortal() {
                     {users.map((userData) => (
                       <TableRow key={userData.id}>
                         <TableCell className="font-medium">{userData.name}</TableCell>
-                        <TableCell>{userData.email}</TableCell>
+                        <TableCell>{userData.user_id}</TableCell>
                         <TableCell>
                           <Badge variant={getRoleColor(userData.role)}>
                             {userData.role}
                           </Badge>
                         </TableCell>
                         <TableCell>{userData.department || '-'}</TableCell>
-                        <TableCell>{new Date(userData.createdAt).toLocaleDateString()}</TableCell>
+                        <TableCell>{new Date(userData.created_at).toLocaleDateString()}</TableCell>
                         <TableCell>
                           <div className="flex gap-2">
                             <Button
@@ -509,8 +509,9 @@ export default function AdminPortal() {
                   <Input
                     id="edit-email"
                     type="email"
-                    value={selectedUser.email}
-                    onChange={(e) => setSelectedUser(prev => prev ? { ...prev, email: e.target.value } : null)}
+                    value={selectedUser.user_id}
+                    onChange={(e) => setSelectedUser(prev => prev ? { ...prev, user_id: e.target.value } : null)}
+                    disabled
                   />
                 </div>
                 <div className="space-y-2">

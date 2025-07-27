@@ -1,91 +1,175 @@
 import { useState, useEffect } from 'react';
-import { User, Ticket } from '@/types';
+import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
+import { toast } from '@/hooks/use-toast';
 
-// Enhanced mock data with more users
-const mockUsers: User[] = [
-  {
-    id: '1',
-    email: 'student@jecrcu.edu.in',
-    name: 'Rahul Sharma',
-    role: 'student',
-    createdAt: '2024-01-10T10:00:00Z',
-  },
-  {
-    id: '2',
-    email: 'resolver@jecrcu.edu.in',
-    name: 'IT Support Team',
-    role: 'resolver',
-    department: 'IT',
-    createdAt: '2024-01-05T14:30:00Z',
-  },
-  {
-    id: '3',
-    email: 'admin@jecrcu.edu.in',
-    name: 'Admin User',
-    role: 'admin',
-    createdAt: '2024-01-01T09:00:00Z',
-  },
-  {
-    id: '4',
-    email: 'priya.student@jecrcu.edu.in',
-    name: 'Priya Patel',
-    role: 'student',
-    createdAt: '2024-01-12T11:20:00Z',
-  },
-  {
-    id: '5',
-    email: 'maintenance@jecrcu.edu.in',
-    name: 'Maintenance Team',
-    role: 'resolver',
-    department: 'Housekeeping',
-    createdAt: '2024-01-03T16:45:00Z',
-  },
-  {
-    id: '6',
-    email: 'infrastructure@jecrcu.edu.in',
-    name: 'Infrastructure Team',
-    role: 'resolver',
-    department: 'Infrastructure',
-    createdAt: '2024-01-02T12:30:00Z',
-  },
-];
+export interface User {
+  id: string;
+  user_id: string;
+  name: string;
+  role: 'student' | 'resolver' | 'admin';
+  department?: string;
+  created_at: string;
+  updated_at: string;
+}
 
 export function useUsers() {
+  const { user, profile } = useAuth();
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Simulate API call
-    setTimeout(() => {
-      setUsers(mockUsers);
+    if (user && profile) {
+      fetchUsers();
+    } else {
+      setUsers([]);
       setIsLoading(false);
-    }, 1000);
-  }, []);
+    }
+  }, [user, profile]);
 
-  const createUser = (userData: Omit<User, 'id' | 'createdAt'>) => {
-    const newUser: User = {
-      ...userData,
-      id: Date.now().toString(),
-      createdAt: new Date().toISOString(),
-    };
-    setUsers(prev => [newUser, ...prev]);
-    return newUser;
+  const fetchUsers = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching users:', error);
+        toast({
+          title: "Error loading users",
+          description: error.message,
+          variant: "destructive",
+        });
+      } else {
+        setUsers(data || []);
+      }
+    } catch (error: any) {
+      console.error('Error in fetchUsers:', error);
+      toast({
+        title: "Error loading users",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const updateUser = (userId: string, updates: Partial<User>) => {
-    setUsers(prev =>
-      prev.map(user =>
-        user.id === userId
-          ? { ...user, ...updates }
-          : user
-      )
-    );
+  const createUser = async (userData: Omit<User, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('profiles')
+        .insert([userData])
+        .select()
+        .single();
+
+      if (error) {
+        toast({
+          title: "Error creating user",
+          description: error.message,
+          variant: "destructive",
+        });
+        throw error;
+      }
+
+      // Log activity
+      await supabase.rpc('log_activity', {
+        p_action: 'create',
+        p_resource_type: 'user',
+        p_resource_id: data.id,
+        p_details: { name: data.name, role: data.role }
+      });
+
+      setUsers(prev => [data, ...prev]);
+      toast({
+        title: "User created successfully",
+        description: `User "${data.name}" has been created.`,
+      });
+
+      return data;
+    } catch (error: any) {
+      console.error('Error creating user:', error);
+      throw error;
+    }
   };
 
-  const deleteUser = (userId: string) => {
-    setUsers(prev => prev.filter(user => user.id !== userId));
+  const updateUser = async (userId: string, updates: Partial<User>) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', userId);
+
+      if (error) {
+        toast({
+          title: "Error updating user",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Log activity
+      await supabase.rpc('log_activity', {
+        p_action: 'update',
+        p_resource_type: 'user',
+        p_resource_id: userId,
+        p_details: updates
+      });
+
+      setUsers(prev =>
+        prev.map(user =>
+          user.id === userId
+            ? { ...user, ...updates }
+            : user
+        )
+      );
+
+      toast({
+        title: "User updated",
+        description: "User has been updated successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error updating user:', error);
+    }
   };
 
+  const deleteUser = async (userId: string) => {
+    try {
+      const { error } = await supabase
+        .from('profiles')
+        .delete()
+        .eq('id', userId);
+
+      if (error) {
+        toast({
+          title: "Error deleting user",
+          description: error.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Log activity
+      await supabase.rpc('log_activity', {
+        p_action: 'delete',
+        p_resource_type: 'user',
+        p_resource_id: userId
+      });
+
+      setUsers(prev => prev.filter(user => user.id !== userId));
+      
+      toast({
+        title: "User deleted",
+        description: "User has been deleted successfully.",
+      });
+    } catch (error: any) {
+      console.error('Error deleting user:', error);
+    }
+  };
+
+  // Helper functions
   const getUserById = (id: string) => {
     return users.find(user => user.id === id);
   };

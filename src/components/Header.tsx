@@ -5,7 +5,7 @@ import { User, LogOut } from "lucide-react";
 import { Link } from "react-router-dom";
 
 const Header = () => {
-  const { user, logout } = useAuth();
+  const { user, profile, signOut } = useAuth();
 
   return (
     <header className="bg-white border-b border-border shadow-sm">
@@ -61,8 +61,8 @@ const Header = () => {
             {/* User Profile & Info */}
             <div className="hidden md:flex items-center space-x-3">
               <div className="text-right">
-                <p className="text-sm font-medium">{user?.name}</p>
-                <p className="text-xs text-muted-foreground capitalize">{user?.role}</p>
+                <p className="text-sm font-medium">{profile?.name || user?.email}</p>
+                <p className="text-xs text-muted-foreground capitalize">{profile?.role || 'student'}</p>
               </div>
               <Button variant="ghost" size="icon">
                 <User className="h-5 w-5" />
@@ -70,7 +70,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="icon"
-                onClick={logout}
+                  onClick={signOut}
                 title="Logout"
               >
                 <LogOut className="h-4 w-4" />
@@ -85,7 +85,7 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 size="icon"
-                onClick={logout}
+                onClick={signOut}
                 title="Logout"
               >
                 <LogOut className="h-4 w-4" />

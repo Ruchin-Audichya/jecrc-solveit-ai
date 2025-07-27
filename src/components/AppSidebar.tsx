@@ -73,7 +73,7 @@ const supportItems = [
 ];
 
 export function AppSidebar() {
-  const { user, logout } = useAuth();
+  const { user, profile, signOut } = useAuth();
   const { state, toggleSidebar } = useSidebar();
   const collapsed = state === 'collapsed';
   const location = useLocation();
@@ -168,12 +168,12 @@ export function AppSidebar() {
               <div className="flex items-center gap-3">
                 <Avatar className="h-8 w-8">
                   <AvatarFallback className="bg-jecrc-gold text-jecrc-red text-xs">
-                    {user.name.split(' ').map(n => n[0]).join('')}
+                    {profile?.name ? profile.name.split(' ').map(n => n[0]).join('') : 'U'}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm truncate">{user.name}</p>
-                  <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
+                  <p className="font-medium text-sm truncate">{profile?.name || user?.email}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{profile?.role || 'student'}</p>
                 </div>
               </div>
             )}
@@ -181,7 +181,7 @@ export function AppSidebar() {
             <Button
               variant="outline"
               size={collapsed ? "icon" : "sm"}
-              onClick={logout}
+              onClick={signOut}
               className="w-full"
             >
               <LogOut className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />

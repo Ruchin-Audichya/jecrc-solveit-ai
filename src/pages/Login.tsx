@@ -11,7 +11,7 @@ export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const { login } = useAuth();
+  const { signIn } = useAuth();
   const { toast } = useToast();
   const navigate = useNavigate();
 
@@ -20,7 +20,8 @@ export default function Login() {
     setIsLoading(true);
 
     try {
-      await login(email, password);
+      const { error } = await signIn(email, password);
+      if (error) throw error;
       toast({
         title: 'Welcome to JECRC SolveIt',
         description: 'You have been successfully logged in.',

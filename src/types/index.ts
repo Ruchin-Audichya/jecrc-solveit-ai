@@ -6,6 +6,7 @@ export type TicketPriority = 'low' | 'medium' | 'high';
 
 export type TicketCategory = 'IT' | 'Housekeeping' | 'Academic' | 'Infrastructure' | 'Transport' | 'Other';
 
+// Legacy User interface for compatibility
 export interface User {
   id: string;
   email: string;
@@ -13,6 +14,17 @@ export interface User {
   role: UserRole;
   department?: string;
   createdAt: string;
+}
+
+// New Profile interface for database
+export interface Profile {
+  id: string;
+  user_id: string;
+  name: string;
+  role: UserRole;
+  department?: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Ticket {
@@ -41,8 +53,12 @@ export interface TicketMessage {
 }
 
 export interface AuthContextType {
-  user: User | null;
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
+  user: any | null; // Supabase User type
+  session: any | null; // Supabase Session type
+  profile: Profile | null;
   isLoading: boolean;
+  signUp: (email: string, password: string, name: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signOut: () => Promise<void>;
+  updateProfile: (updates: Partial<Profile>) => Promise<{ error: any }>;
 }
