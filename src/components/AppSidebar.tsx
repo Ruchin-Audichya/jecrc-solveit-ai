@@ -1,0 +1,195 @@
+import { NavLink, useLocation } from 'react-router-dom';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarGroup,
+  SidebarGroupContent,
+  SidebarGroupLabel,
+  SidebarMenu,
+  SidebarMenuButton,
+  SidebarMenuItem,
+  SidebarHeader,
+  SidebarFooter,
+  useSidebar,
+} from '@/components/ui/sidebar';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import { 
+  Home, 
+  Plus, 
+  Ticket, 
+  Users, 
+  Settings, 
+  FileText,
+  MessageSquare,
+  Book,
+  Shield,
+  LogOut,
+  ChevronLeft,
+  ChevronRight
+} from 'lucide-react';
+
+const menuItems = [
+  {
+    title: "Dashboard",
+    url: "/dashboard",
+    icon: Home,
+    roles: ["student", "resolver", "admin"]
+  },
+  {
+    title: "Create Ticket",
+    url: "/create-ticket",
+    icon: Plus,
+    roles: ["student"]
+  },
+  {
+    title: "Admin Portal",
+    url: "/admin",
+    icon: Shield,
+    roles: ["admin"]
+  },
+  {
+    title: "System Logs",
+    url: "/logs",
+    icon: FileText,
+    roles: ["admin"]
+  }
+];
+
+const supportItems = [
+  {
+    title: "FAQ & Chat",
+    url: "/faq-chat",
+    icon: MessageSquare,
+    roles: ["student", "resolver", "admin"]
+  },
+  {
+    title: "Tutorial",
+    url: "/tutorial",
+    icon: Book,
+    roles: ["student", "resolver", "admin"]
+  }
+];
+
+export function AppSidebar() {
+  const { user, logout } = useAuth();
+  const { state, toggleSidebar } = useSidebar();
+  const collapsed = state === 'collapsed';
+  const location = useLocation();
+  const currentPath = location.pathname;
+
+  const isActive = (path: string) => currentPath === path;
+  const getNavCls = ({ isActive }: { isActive: boolean }) =>
+    isActive ? "bg-accent text-accent-foreground font-medium" : "hover:bg-accent/50";
+
+  const filteredMenuItems = menuItems.filter(item => 
+    user && item.roles.includes(user.role)
+  );
+
+  const filteredSupportItems = supportItems.filter(item => 
+    user && item.roles.includes(user.role)
+  );
+
+  return (
+    <Sidebar className={collapsed ? "w-16" : "w-64"} collapsible="icon">
+      <SidebarHeader className="border-b p-4">
+        <div className="flex items-center justify-between">
+          {!collapsed && (
+            <div className="flex items-center gap-2">
+              <div className="h-8 w-8 bg-jecrc-red rounded-md flex items-center justify-center">
+                <span className="text-white font-bold text-sm">J</span>
+              </div>
+              <div>
+                <h2 className="font-bold text-sm">JECRC IT Support</h2>
+                <p className="text-xs text-muted-foreground">Support Portal</p>
+              </div>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={toggleSidebar}
+            className="h-6 w-6"
+          >
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </Button>
+        </div>
+      </SidebarHeader>
+
+      <SidebarContent>
+        {/* Main Navigation */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Main</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filteredMenuItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} end className={getNavCls}>
+                      <item.icon className={`h-4 w-4 ${collapsed ? 'mx-auto' : 'mr-2'}`} />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Support & Help */}
+        <SidebarGroup>
+          <SidebarGroupLabel>Support & Help</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {filteredSupportItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink to={item.url} end className={getNavCls}>
+                      <item.icon className={`h-4 w-4 ${collapsed ? 'mx-auto' : 'mr-2'}`} />
+                      {!collapsed && <span>{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+
+      <SidebarFooter className="border-t p-4">
+        {user && (
+          <div className="space-y-3">
+            {!collapsed && (
+              <div className="flex items-center gap-3">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-jecrc-gold text-jecrc-red text-xs">
+                    {user.name.split(' ').map(n => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-sm truncate">{user.name}</p>
+                  <p className="text-xs text-muted-foreground capitalize">{user.role}</p>
+                </div>
+              </div>
+            )}
+            
+            <Button
+              variant="outline"
+              size={collapsed ? "icon" : "sm"}
+              onClick={logout}
+              className="w-full"
+            >
+              <LogOut className={`h-4 w-4 ${collapsed ? '' : 'mr-2'}`} />
+              {!collapsed && "Logout"}
+            </Button>
+          </div>
+        )}
+      </SidebarFooter>
+    </Sidebar>
+  );
+}

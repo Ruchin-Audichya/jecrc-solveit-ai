@@ -1,10 +1,12 @@
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { SidebarProvider } from "@/components/ui/sidebar";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider, useAuth } from "@/contexts/AuthContext";
 import Header from "@/components/Header";
+import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -13,6 +15,8 @@ import CreateTicket from "./pages/CreateTicket";
 import TicketDetail from "./pages/TicketDetail";
 import AdminPortal from "./pages/AdminPortal";
 import SystemLogs from "./pages/SystemLogs";
+import FAQChat from "./pages/FAQChat";
+import Tutorial from "./pages/Tutorial";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -31,12 +35,19 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   if (!user) {
     return <Navigate to="/login" replace />;
   }
-  
+
   return (
-    <>
-      <Header />
-      {children}
-    </>
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <main className="flex-1">
+          <Header />
+          <div className="p-6">
+            {children}
+          </div>
+        </main>
+      </div>
+    </SidebarProvider>
   );
 }
 
@@ -99,6 +110,16 @@ const App = () => (
             <Route path="/logs" element={
               <ProtectedRoute>
                 <SystemLogs />
+              </ProtectedRoute>
+            } />
+            <Route path="/faq-chat" element={
+              <ProtectedRoute>
+                <FAQChat />
+              </ProtectedRoute>
+            } />
+            <Route path="/tutorial" element={
+              <ProtectedRoute>
+                <Tutorial />
               </ProtectedRoute>
             } />
             <Route path="*" element={<NotFound />} />
