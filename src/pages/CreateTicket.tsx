@@ -35,7 +35,7 @@ export default function CreateTicket() {
     setIsSubmitting(true);
     
     try {
-      const newTicket = createTicket({
+      const newTicket = await createTicket({
         title,
         description,
         category: category as TicketCategory,

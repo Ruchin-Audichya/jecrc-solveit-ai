@@ -17,7 +17,7 @@ const Header = () => {
               {/* JECRC Logo Placeholder */}
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <img 
-                  src="/lovable-uploads/31cef77f-7eb8-4fc9-8fd6-2176c5ba9c0b.png" 
+                  src="/src/assets/jecrc-logo-banner.png" 
                   alt="JECRC University" 
                   className="w-8 h-8 object-contain"
                 />

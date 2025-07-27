@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTickets } from '@/hooks/useTickets';
@@ -16,7 +16,7 @@ export default function TicketDetail() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuth();
-  const { tickets, messages, updateTicketStatus, assignTicket, addMessage } = useTickets();
+  const { tickets, messages, updateTicketStatus, assignTicket, addMessage, fetchMessages } = useTickets();
   const { toast } = useToast();
   
   const [newMessage, setNewMessage] = useState('');
@@ -24,6 +24,13 @@ export default function TicketDetail() {
 
   const ticket = tickets.find(t => t.id === id);
   const ticketMessages = messages.filter(m => m.ticketId === id);
+
+  // Fetch messages when ticket ID changes
+  useEffect(() => {
+    if (id && ticket) {
+      fetchMessages(id);
+    }
+  }, [id, ticket, fetchMessages]);
 
   if (!ticket) {
     return (
@@ -42,39 +49,39 @@ export default function TicketDetail() {
     (user?.role === 'resolver' && ticket.assignedTo === user.id) ||
     (user?.role === 'student' && ticket.createdBy === user.id);
 
-  const handleStatusChange = (newStatus: Ticket['status']) => {
-    updateTicketStatus(ticket.id, newStatus);
-    toast({
-      title: 'Status Updated',
-      description: `Ticket status changed to ${newStatus.replace('-', ' ')}.`,
-    });
-  };
-
-  const handleAssignToSelf = () => {
-    if (user && user.role === 'resolver') {
-      assignTicket(ticket.id, user.id);
-      toast({
-        title: 'Ticket Assigned',
-        description: 'This ticket has been assigned to you.',
-      });
+  const handleStatusChange = async (newStatus: Ticket['status']) => {
+    try {
+      await updateTicketStatus(ticket.id, newStatus);
+    } catch (error) {
+      // Error handling is done in the hook
     }
   };
 
-  const handleSendMessage = () => {
+  const handleAssignToSelf = async () => {
+    if (user && user.role === 'resolver') {
+      try {
+        await assignTicket(ticket.id, user.id);
+      } catch (error) {
+        // Error handling is done in the hook
+      }
+    }
+  };
+
+  const handleSendMessage = async () => {
     if (!newMessage.trim() || !user) return;
 
-    addMessage({
-      ticketId: ticket.id,
-      userId: user.id,
-      message: newMessage,
-      isInternal: isInternal && user.role !== 'student',
-    });
+    try {
+      await addMessage({
+        ticketId: ticket.id,
+        userId: user.id,
+        message: newMessage,
+        isInternal: isInternal && user.role !== 'student',
+      });
 
-    setNewMessage('');
-    toast({
-      title: 'Message Sent',
-      description: 'Your message has been added to the ticket.',
-    });
+      setNewMessage('');
+    } catch (error) {
+      // Error handling is done in the hook
+    }
   };
 
   const getStatusColor = (status: Ticket['status']) => {
