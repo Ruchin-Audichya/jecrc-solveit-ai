@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Loader2 } from 'lucide-react';
 
 export default function Auth() {
+  const navigate = useNavigate();
   const { user, isLoading, signIn, signUp } = useAuth();
   const [signInData, setSignInData] = useState({
     email: '',
@@ -93,7 +94,7 @@ export default function Auth() {
         </CardHeader>
         <CardContent>
           <div className="text-center mb-4">
-            <Button variant="outline" onClick={() => window.location.href = '/demo'} className="mb-4">
+            <Button variant="outline" onClick={() => navigate('/demo')} className="mb-4">
               🚀 Quick Demo Access
             </Button>
           </div>

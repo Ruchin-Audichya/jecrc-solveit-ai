@@ -19,17 +19,29 @@ const HeroSection = () => {
           </p>
           
           {/* Quick Actions */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link to="/login">
+          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
+            <Link to="/demo">
               <Button size="lg" className="font-poppins">
                 <Plus className="mr-2 h-5 w-5" />
-                Create New Ticket
+                Try Demo Portal
               </Button>
             </Link>
-            <Link to="/login">
+            <Link to="/auth">
               <Button variant="outline" size="lg" className="font-poppins">
                 <Search className="mr-2 h-5 w-5" />
-                Sign In to Track Tickets
+                Sign Up / Sign In
+              </Button>
+            </Link>
+          </div>
+
+          {/* Admin Access */}
+          <div className="text-center mb-12">
+            <p className="text-sm text-muted-foreground mb-2">
+              JECRC IT Administrator?
+            </p>
+            <Link to="/admin-register">
+              <Button variant="secondary" size="sm" className="font-poppins">
+                Admin Registration
               </Button>
             </Link>
           </div>

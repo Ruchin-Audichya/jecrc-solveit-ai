@@ -24,14 +24,18 @@ import {
   Clock,
   CheckCircle,
   AlertCircle,
-  TrendingUp
+  TrendingUp,
+  Zap,
+  RefreshCw
 } from 'lucide-react';
 import { Navigate } from 'react-router-dom';
+import { useAutoAssignment } from '@/hooks/useAutoAssignment';
 
 export default function AdminPortal() {
   const { user, profile } = useAuth();
   const { users, createUser, updateUser, deleteUser, getUsersByRole, isLoading } = useUsers();
   const { tickets } = useTickets();
+  const { assignTicketAutomatically, reassignTicket, isAssigning } = useAutoAssignment();
   const { toast } = useToast();
   
   const [selectedUser, setSelectedUser] = useState<any>(null);
@@ -447,7 +451,26 @@ export default function AdminPortal() {
 
           {/* Ticket Management Tab */}
           <TabsContent value="tickets" className="space-y-6">
-            <h2 className="text-2xl font-bold">All Tickets</h2>
+            <div className="flex justify-between items-center">
+              <h2 className="text-2xl font-bold">Ticket Management</h2>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  className="gap-2"
+                  onClick={async () => {
+                    const unassignedTickets = tickets.filter(t => !t.assignedTo && t.status === 'open');
+                    for (const ticket of unassignedTickets) {
+                      await assignTicketAutomatically(ticket.id, ticket.category);
+                    }
+                  }}
+                  disabled={isAssigning}
+                >
+                  <Zap className="h-4 w-4" />
+                  {isAssigning ? 'Auto-Assigning...' : 'Auto-Assign All'}
+                </Button>
+              </div>
+            </div>
+
             <div className="space-y-4">
               {tickets.map((ticket) => (
                 <Card key={ticket.id} className="hover:bg-accent transition-colors">
@@ -467,18 +490,57 @@ export default function AdminPortal() {
                           <span>Created by User #{ticket.createdBy}</span>
                           <span>{ticket.location}</span>
                           <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                          {ticket.assignedTo && (
+                            <span>Assigned to: {users.find(u => u.user_id === ticket.assignedTo)?.name || 'Unknown'}</span>
+                          )}
                         </div>
                       </div>
                       <div className="flex flex-col gap-2 ml-4">
-                        <Badge variant={ticket.status === 'open' ? 'destructive' : ticket.status === 'resolved' ? 'secondary' : 'default'}>
-                          {ticket.status.replace('-', ' ')}
-                        </Badge>
-                        <Badge variant={ticket.priority === 'high' ? 'destructive' : 'default'}>
-                          {ticket.priority} priority
-                        </Badge>
+                        <div className="flex gap-2">
+                          <Badge variant={ticket.status === 'open' ? 'destructive' : ticket.status === 'resolved' ? 'secondary' : 'default'}>
+                            {ticket.status.replace('-', ' ')}
+                          </Badge>
+                          <Badge variant={ticket.priority === 'high' ? 'destructive' : 'default'}>
+                            {ticket.priority} priority
+                          </Badge>
+                        </div>
                         <Badge variant="outline">
                           {ticket.category}
                         </Badge>
+                        <div className="flex gap-1 mt-2">
+                          {!ticket.assignedTo && ticket.status === 'open' && (
+                            <Button
+                              size="sm"
+                              className="gap-1"
+                              onClick={() => assignTicketAutomatically(ticket.id, ticket.category)}
+                              disabled={isAssigning}
+                            >
+                              <Zap className="h-3 w-3" />
+                              Auto-Assign
+                            </Button>
+                          )}
+                          {ticket.assignedTo && (
+                            <Select
+                              value=""
+                              onValueChange={(resolverId) => {
+                                if (resolverId !== ticket.assignedTo) {
+                                  reassignTicket(ticket.id, ticket.assignedTo!, resolverId);
+                                }
+                              }}
+                            >
+                              <SelectTrigger className="w-32 h-8">
+                                <SelectValue placeholder="Reassign" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {getUsersByRole('resolver').map((resolver) => (
+                                  <SelectItem key={resolver.user_id} value={resolver.user_id}>
+                                    {resolver.name}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </CardContent>

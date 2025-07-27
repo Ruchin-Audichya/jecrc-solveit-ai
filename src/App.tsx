@@ -11,6 +11,7 @@ import Index from "./pages/Index";
 import Login from "./pages/Login";
 import Auth from "./pages/Auth";
 import Demo from "./pages/Demo";
+import AdminRegistration from "./pages/AdminRegistration";
 import Dashboard from "./pages/Dashboard";
 import EnhancedDashboard from "./pages/EnhancedDashboard";
 import CreateTicket from "./pages/CreateTicket";
@@ -97,6 +98,11 @@ const App = () => (
             <Route path="/demo" element={
               <PublicRoute>
                 <Demo />
+              </PublicRoute>
+            } />
+            <Route path="/admin-register" element={
+              <PublicRoute>
+                <AdminRegistration />
               </PublicRoute>
             } />
             <Route path="/dashboard" element={

@@ -8,12 +8,12 @@ import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
 export default function Login() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const { signIn } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -85,13 +85,24 @@ export default function Login() {
             </Button>
           </form>
           
-          <div className="mt-6 text-center">
-            <p className="text-sm text-muted-foreground mb-4">Demo Credentials:</p>
-            <div className="space-y-2 text-xs">
-              <p><strong>Student:</strong> student@jecrcu.edu.in</p>
-              <p><strong>Resolver:</strong> resolver@jecrcu.edu.in</p>
-              <p><strong>Admin:</strong> admin@jecrcu.edu.in</p>
-              <p><strong>Password:</strong> password123</p>
+          <div className="mt-6 text-center space-y-4">
+            <div className="space-y-2">
+              <p className="text-sm text-muted-foreground mb-4">Demo Credentials:</p>
+              <div className="space-y-2 text-xs">
+                <p><strong>Student:</strong> student@jecrcu.edu.in</p>
+                <p><strong>Resolver:</strong> resolver@jecrcu.edu.in</p>
+                <p><strong>Admin:</strong> admin@jecrcu.edu.in</p>
+                <p><strong>Password:</strong> password123</p>
+              </div>
+            </div>
+            
+            <div className="flex gap-2 pt-4">
+              <Button variant="outline" onClick={() => navigate('/demo')} className="flex-1">
+                Demo Portal
+              </Button>
+              <Button variant="outline" onClick={() => navigate('/auth')} className="flex-1">
+                New Account
+              </Button>
             </div>
           </div>
         </CardContent>
