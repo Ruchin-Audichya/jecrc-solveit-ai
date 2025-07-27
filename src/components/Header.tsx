@@ -46,7 +46,7 @@ const Header = () => {
                 </Link>
               </>
             )}
-            {(user?.role === 'student' || user?.role === 'admin') && (
+            {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
               <Link to="/create-ticket" className="font-lato text-foreground hover:text-primary transition-colors">
                 Create Ticket
               </Link>

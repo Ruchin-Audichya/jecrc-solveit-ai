@@ -23,6 +23,13 @@ export default function Demo() {
       features: ['Submit tickets', 'Track status', 'View responses']
     },
     {
+      role: 'Staff',
+      email: 'staff@jecrcu.edu.in',
+      description: 'Create and track tickets, same as student role',
+      color: 'bg-cyan-500',
+      features: ['Submit tickets', 'Track status', 'Verify resolutions']
+    },
+    {
       role: 'Resolver',
       email: 'resolver@jecrcu.edu.in', 
       description: 'Resolve tickets, manage assigned cases',
@@ -149,7 +156,7 @@ export default function Demo() {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-6 mb-6">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {demoAccounts.map((account) => (
             <Card key={account.email} className="hover:shadow-lg transition-shadow">
               <CardHeader className="text-center">
@@ -196,9 +203,12 @@ export default function Demo() {
             <p className="text-sm text-muted-foreground mb-3">
               IT Team: You can also create accounts manually with these credentials
             </p>
-            <div className="grid md:grid-cols-3 gap-2 text-xs">
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
               <div>
                 <strong>Student:</strong> student@jecrcu.edu.in
+              </div>
+              <div>
+                <strong>Staff:</strong> staff@jecrcu.edu.in
               </div>
               <div>
                 <strong>Resolver:</strong> resolver@jecrcu.edu.in

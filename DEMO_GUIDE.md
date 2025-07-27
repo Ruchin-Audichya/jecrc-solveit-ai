@@ -19,6 +19,7 @@ Use these credentials to create accounts manually:
 | Role | Email | Password |
 |------|-------|----------|
 | Student | student@jecrcu.edu.in | password123 |
+| Staff | staff@jecrcu.edu.in | password123 |
 | Resolver | resolver@jecrcu.edu.in | password123 |
 | Admin | admin@jecrcu.edu.in | password123 |
 
@@ -40,6 +41,23 @@ Use these credentials to create accounts manually:
 2. Upload a screenshot as attachment
 3. Add follow-up messages
 4. Check dashboard for ticket status
+
+### 👔 Staff Role Features
+**Login:** staff@jecrcu.edu.in / password123
+
+**What to Test:**
+- ✅ Same permissions as Student role
+- ✅ Create new tickets with different categories
+- ✅ Upload file attachments to tickets
+- ✅ View ticket status and progress
+- ✅ Add messages/comments to tickets
+- ✅ **Verify & Close resolved tickets**
+
+**Test Scenarios:**
+1. Create a facilities maintenance ticket
+2. Upload documentation as attachment
+3. Wait for resolver to mark as resolved
+4. **Use "Verify & Close Ticket" button to complete lifecycle**
 
 ### 🔧 Resolver Role Features  
 **Login:** resolver@jecrcu.edu.in / password123
@@ -79,13 +97,14 @@ Use these credentials to create accounts manually:
 ## 🎫 Ticket Management Workflow
 
 ### Complete Ticket Lifecycle Test:
-1. **Student** creates a new ticket
+1. **Student/Staff** creates a new ticket
 2. **Resolver** assigns ticket to themselves
 3. **Resolver** updates status to "In Progress"
 4. **Resolver** adds progress update message
-5. **Student** receives notification and responds
+5. **Student/Staff** receives notification and responds
 6. **Resolver** resolves the ticket
-7. **Admin** reviews completion in analytics
+7. **Student/Staff** verifies resolution and closes ticket
+8. **Admin** reviews completion in analytics
 
 ## 📊 Key Features to Demonstrate
 

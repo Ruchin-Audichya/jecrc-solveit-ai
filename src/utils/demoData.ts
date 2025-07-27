@@ -41,8 +41,8 @@ export const createSampleTickets = async (userId: string, userRole: string) => {
       }
     ];
 
-    // Only create tickets for student and admin roles
-    if (userRole === 'student' || userRole === 'admin') {
+    // Only create tickets for student, staff, and admin roles
+    if (userRole === 'student' || userRole === 'staff' || userRole === 'admin') {
       const { data, error } = await supabase
         .from('tickets')
         .insert(sampleTickets.slice(0, userRole === 'admin' ? 4 : 2))

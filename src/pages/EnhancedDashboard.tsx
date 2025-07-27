@@ -132,7 +132,7 @@ export default function EnhancedDashboard() {
               <TicketIcon className="h-8 w-8 text-primary" />
               {user?.role === 'admin' && 'System Overview'}
               {user?.role === 'resolver' && 'My Assignments'}
-              {user?.role === 'student' && 'My Tickets'}
+              {(user?.role === 'student' || user?.role === 'staff') && 'My Tickets'}
             </h1>
             <p className="text-muted-foreground mt-1">
               Welcome back, {profile?.name || user?.email} • {profile?.role === 'admin' ? 'System Administrator' : profile?.role === 'resolver' ? `${profile.department} Resolver` : 'Student'}
@@ -147,7 +147,7 @@ export default function EnhancedDashboard() {
                 </Button>
               </Link>
             )}
-            {(user?.role === 'student' || user?.role === 'admin') && (
+            {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
               <Link to="/create-ticket">
                 <Button className="gap-2">
                   Create Ticket
@@ -313,7 +313,7 @@ export default function EnhancedDashboard() {
                     ? 'Try adjusting your filters or search query.'
                     : 'No tickets match your current view.'}
                 </p>
-                {user?.role === 'student' && (
+                {(user?.role === 'student' || user?.role === 'staff') && (
                   <Link to="/create-ticket">
                     <Button>Create Your First Ticket</Button>
                   </Link>
