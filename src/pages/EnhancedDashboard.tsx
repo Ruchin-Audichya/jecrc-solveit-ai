@@ -155,7 +155,6 @@ export default function EnhancedDashboard() {
               Welcome back, {profile?.name || user?.email} • {
                 profile?.role === 'admin' ? 'System Administrator' : 
                 profile?.role === 'resolver' ? `${profile.department} Resolver` : 
-                profile?.role === 'staff' ? 'Staff Member' :
                 'Student'
               }
             </p>

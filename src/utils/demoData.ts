@@ -6,43 +6,43 @@ export const createSampleTickets = async (userId: string, userRole: string) => {
       {
         title: 'WiFi Connection Issues in Library',
         description: 'The WiFi connection is very slow and keeps disconnecting in the main library building. Students are unable to access online resources for their research work.',
-        category: 'IT',
-        priority: 'high',
-        status: 'open',
+        category: 'IT' as const,
+        priority: 'high' as const,
+        status: 'open' as const,
         location: 'Main Library - Ground Floor',
         created_by: userId,
       },
       {
         title: 'Broken Chair in Classroom 301',
         description: 'One of the chairs in classroom 301 is broken and needs immediate replacement. It poses a safety risk to students.',
-        category: 'Infrastructure',
-        priority: 'medium',
-        status: 'in-progress',
+        category: 'Infrastructure' as const,
+        priority: 'medium' as const,
+        status: 'in-progress' as const,
         location: 'Academic Block A - Room 301',
         created_by: userId,
       },
       {
         title: 'Air Conditioning Not Working',
         description: 'The air conditioning unit in the computer lab is not functioning properly. The room temperature is affecting the performance of computers and student comfort.',
-        category: 'Housekeeping',
-        priority: 'high',
-        status: 'resolved',
+        category: 'Housekeeping' as const,
+        priority: 'high' as const,
+        status: 'resolved' as const,
         location: 'Computer Lab - Block B',
         created_by: userId,
       },
       {
         title: 'Projector Display Issues',
         description: 'The projector in lecture hall 205 is showing blurry images and has connectivity issues with laptops.',
-        category: 'IT',
-        priority: 'medium',
-        status: 'open',
+        category: 'IT' as const,
+        priority: 'medium' as const,
+        status: 'open' as const,
         location: 'Lecture Hall 205',
         created_by: userId,
       }
     ];
 
-    // Only create tickets for student, staff, and admin roles
-    if (userRole === 'student' || userRole === 'staff' || userRole === 'admin') {
+    // Only create tickets for student, resolver, and admin roles
+    if (userRole === 'student' || userRole === 'resolver' || userRole === 'admin') {
       const { data, error } = await supabase
         .from('tickets')
         .insert(sampleTickets.slice(0, userRole === 'admin' ? 4 : 2))

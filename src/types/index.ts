@@ -1,4 +1,4 @@
-export type UserRole = 'student' | 'staff' | 'resolver' | 'admin';
+export type UserRole = 'student' | 'resolver' | 'admin';
 
 export type TicketStatus = 'open' | 'in-progress' | 'resolved' | 'closed';
 
