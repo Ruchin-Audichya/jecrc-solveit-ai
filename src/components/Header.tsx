@@ -1,0 +1,71 @@
+import { Button } from "@/components/ui/button";
+import { Bell, User, Menu } from "lucide-react";
+
+const Header = () => {
+  return (
+    <header className="bg-white border-b border-border shadow-sm">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo and Title */}
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-3">
+              {/* JECRC Logo Placeholder */}
+              <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+                <img 
+                  src="/lovable-uploads/31cef77f-7eb8-4fc9-8fd6-2176c5ba9c0b.png" 
+                  alt="JECRC University" 
+                  className="w-8 h-8 object-contain"
+                />
+              </div>
+              <div>
+                <h1 className="text-xl font-poppins font-bold text-foreground">
+                  JECRC <span className="jecrc-text-gradient">SolveIt</span>
+                </h1>
+                <p className="text-xs font-lato text-muted-foreground">University Grievance System</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Navigation - Desktop */}
+          <nav className="hidden md:flex items-center space-x-6">
+            <a href="#" className="font-lato text-foreground hover:text-primary transition-colors">
+              Dashboard
+            </a>
+            <a href="#" className="font-lato text-foreground hover:text-primary transition-colors">
+              My Tickets
+            </a>
+            <a href="#" className="font-lato text-foreground hover:text-primary transition-colors">
+              Create Ticket
+            </a>
+            <a href="#" className="font-lato text-foreground hover:text-primary transition-colors">
+              FAQ
+            </a>
+          </nav>
+
+          {/* User Actions */}
+          <div className="flex items-center space-x-4">
+            {/* Notifications */}
+            <Button variant="ghost" size="icon" className="relative">
+              <Bell className="h-5 w-5" />
+              <span className="absolute -top-1 -right-1 h-4 w-4 bg-error rounded-full text-xs text-white flex items-center justify-center">
+                3
+              </span>
+            </Button>
+
+            {/* User Profile */}
+            <Button variant="ghost" size="icon">
+              <User className="h-5 w-5" />
+            </Button>
+
+            {/* Mobile Menu */}
+            <Button variant="ghost" size="icon" className="md:hidden">
+              <Menu className="h-5 w-5" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Header;
