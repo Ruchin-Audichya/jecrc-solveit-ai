@@ -9,6 +9,8 @@ import Header from "@/components/Header";
 import { AppSidebar } from "@/components/AppSidebar";
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Auth from "./pages/Auth";
+import Demo from "./pages/Demo";
 import Dashboard from "./pages/Dashboard";
 import EnhancedDashboard from "./pages/EnhancedDashboard";
 import CreateTicket from "./pages/CreateTicket";
@@ -85,6 +87,16 @@ const App = () => (
             <Route path="/login" element={
               <PublicRoute>
                 <Login />
+              </PublicRoute>
+            } />
+            <Route path="/auth" element={
+              <PublicRoute>
+                <Auth />
+              </PublicRoute>
+            } />
+            <Route path="/demo" element={
+              <PublicRoute>
+                <Demo />
               </PublicRoute>
             } />
             <Route path="/dashboard" element={

@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Loader2 } from 'lucide-react';
 
 export default function Auth() {
@@ -18,7 +19,10 @@ export default function Auth() {
     email: '',
     password: '',
     name: '',
-    confirmPassword: ''
+    confirmPassword: '',
+    rollNumber: '',
+    course: '',
+    year: ''
   });
   const [signInLoading, setSignInLoading] = useState(false);
   const [signUpLoading, setSignUpLoading] = useState(false);
@@ -59,7 +63,10 @@ export default function Auth() {
           email: '',
           password: '',
           name: '',
-          confirmPassword: ''
+          confirmPassword: '',
+          rollNumber: '',
+          course: '',
+          year: ''
         });
       }
     } finally {
@@ -85,6 +92,12 @@ export default function Auth() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="text-center mb-4">
+            <Button variant="outline" onClick={() => window.location.href = '/demo'} className="mb-4">
+              🚀 Quick Demo Access
+            </Button>
+          </div>
+          
           <Tabs defaultValue="signin" className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="signin">Sign In</TabsTrigger>
@@ -149,6 +162,54 @@ export default function Auth() {
                 </div>
                 
                 <div className="space-y-2">
+                  <Label htmlFor="signup-roll">JECRC University Roll Number</Label>
+                  <Input
+                    id="signup-roll"
+                    type="text"
+                    placeholder="e.g., 22UCS001"
+                    value={signUpData.rollNumber}
+                    onChange={(e) => setSignUpData(prev => ({ ...prev, rollNumber: e.target.value }))}
+                    required
+                  />
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="signup-course">Course</Label>
+                  <Select value={signUpData.course} onValueChange={(value) => setSignUpData(prev => ({ ...prev, course: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="B.Tech CSE">B.Tech Computer Science</SelectItem>
+                      <SelectItem value="B.Tech ECE">B.Tech Electronics & Communication</SelectItem>
+                      <SelectItem value="B.Tech ME">B.Tech Mechanical Engineering</SelectItem>
+                      <SelectItem value="B.Tech CE">B.Tech Civil Engineering</SelectItem>
+                      <SelectItem value="BBA">Bachelor of Business Administration</SelectItem>
+                      <SelectItem value="BCA">Bachelor of Computer Applications</SelectItem>
+                      <SelectItem value="M.Tech">M.Tech</SelectItem>
+                      <SelectItem value="MBA">Master of Business Administration</SelectItem>
+                      <SelectItem value="other">Other</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="signup-year">Student Year</Label>
+                  <Select value={signUpData.year} onValueChange={(value) => setSignUpData(prev => ({ ...prev, year: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your year" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="1">1st Year</SelectItem>
+                      <SelectItem value="2">2nd Year</SelectItem>
+                      <SelectItem value="3">3rd Year</SelectItem>
+                      <SelectItem value="4">4th Year</SelectItem>
+                      <SelectItem value="postgrad">Post Graduate</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>
                   <Input
                     id="signup-email"
@@ -197,6 +258,9 @@ export default function Auth() {
                     !signUpData.email || 
                     !signUpData.password || 
                     !signUpData.name ||
+                    !signUpData.rollNumber ||
+                    !signUpData.course ||
+                    !signUpData.year ||
                     !signUpData.confirmPassword ||
                     signUpData.password !== signUpData.confirmPassword
                   }
