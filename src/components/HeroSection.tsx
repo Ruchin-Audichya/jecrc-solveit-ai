@@ -21,13 +21,13 @@ const HeroSection = () => {
           {/* Quick Actions */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-8">
             <Link to="/demo">
-              <Button size="lg" className="font-poppins">
+              <Button size="lg" className="font-poppins jecrc-gradient hover:opacity-90 text-white shadow-lg px-8">
                 <Plus className="mr-2 h-5 w-5" />
                 Try Demo Portal
               </Button>
             </Link>
             <Link to="/auth">
-              <Button variant="outline" size="lg" className="font-poppins">
+              <Button variant="outline" size="lg" className="font-poppins border-primary text-primary hover:bg-primary hover:text-white px-8">
                 <Search className="mr-2 h-5 w-5" />
                 Sign Up / Sign In
               </Button>
@@ -40,7 +40,7 @@ const HeroSection = () => {
               JECRC IT Administrator?
             </p>
             <Link to="/admin-register">
-              <Button variant="secondary" size="sm" className="font-poppins">
+              <Button variant="secondary" size="sm" className="font-poppins jecrc-btn-secondary">
                 Admin Registration
               </Button>
             </Link>

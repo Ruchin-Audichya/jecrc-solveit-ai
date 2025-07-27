@@ -23,7 +23,8 @@ export default function Auth() {
     confirmPassword: '',
     rollNumber: '',
     course: '',
-    year: ''
+    year: '',
+    role: 'student' as 'student' | 'staff'
   });
   const [signInLoading, setSignInLoading] = useState(false);
   const [signUpLoading, setSignUpLoading] = useState(false);
@@ -57,7 +58,15 @@ export default function Auth() {
     setSignUpLoading(true);
     
     try {
-      const { error } = await signUp(signUpData.email, signUpData.password, signUpData.name);
+      const { error } = await signUp({
+        email: signUpData.email,
+        password: signUpData.password,
+        name: signUpData.name,
+        role: signUpData.role,
+        rollNumber: signUpData.rollNumber,
+        course: signUpData.course,
+        year: signUpData.year
+      });
       if (!error) {
         // Clear form and switch to sign in tab
         setSignUpData({
@@ -67,7 +76,8 @@ export default function Auth() {
           confirmPassword: '',
           rollNumber: '',
           course: '',
-          year: ''
+          year: '',
+          role: 'student' as 'student' | 'staff'
         });
       }
     } finally {
@@ -161,13 +171,26 @@ export default function Auth() {
                     required
                   />
                 </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="signup-role">I am a</Label>
+                  <Select value={signUpData.role} onValueChange={(value: 'student' | 'staff') => setSignUpData(prev => ({ ...prev, role: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select your role" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="student">Student</SelectItem>
+                      <SelectItem value="staff">Faculty/Staff Member</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-roll">JECRC University Roll Number</Label>
+                  <Label htmlFor="signup-roll">{signUpData.role === 'student' ? 'JECRC University Roll Number' : 'Employee ID'}</Label>
                   <Input
                     id="signup-roll"
                     type="text"
-                    placeholder="e.g., 22UCS001"
+                    placeholder={signUpData.role === 'student' ? 'e.g., 22UCS001' : 'e.g., EMP001'}
                     value={signUpData.rollNumber}
                     onChange={(e) => setSignUpData(prev => ({ ...prev, rollNumber: e.target.value }))}
                     required
@@ -175,40 +198,59 @@ export default function Auth() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signup-course">Course</Label>
+                  <Label htmlFor="signup-course">{signUpData.role === 'student' ? 'Course' : 'Department'}</Label>
                   <Select value={signUpData.course} onValueChange={(value) => setSignUpData(prev => ({ ...prev, course: value }))}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Select your course" />
+                      <SelectValue placeholder={signUpData.role === 'student' ? 'Select your course' : 'Select your department'} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="B.Tech CSE">B.Tech Computer Science</SelectItem>
-                      <SelectItem value="B.Tech ECE">B.Tech Electronics & Communication</SelectItem>
-                      <SelectItem value="B.Tech ME">B.Tech Mechanical Engineering</SelectItem>
-                      <SelectItem value="B.Tech CE">B.Tech Civil Engineering</SelectItem>
-                      <SelectItem value="BBA">Bachelor of Business Administration</SelectItem>
-                      <SelectItem value="BCA">Bachelor of Computer Applications</SelectItem>
-                      <SelectItem value="M.Tech">M.Tech</SelectItem>
-                      <SelectItem value="MBA">Master of Business Administration</SelectItem>
-                      <SelectItem value="other">Other</SelectItem>
+                      {signUpData.role === 'student' ? (
+                        <>
+                          <SelectItem value="B.Tech CSE">B.Tech Computer Science</SelectItem>
+                          <SelectItem value="B.Tech ECE">B.Tech Electronics & Communication</SelectItem>
+                          <SelectItem value="B.Tech ME">B.Tech Mechanical Engineering</SelectItem>
+                          <SelectItem value="B.Tech CE">B.Tech Civil Engineering</SelectItem>
+                          <SelectItem value="BBA">Bachelor of Business Administration</SelectItem>
+                          <SelectItem value="BCA">Bachelor of Computer Applications</SelectItem>
+                          <SelectItem value="M.Tech">M.Tech</SelectItem>
+                          <SelectItem value="MBA">Master of Business Administration</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </>
+                      ) : (
+                        <>
+                          <SelectItem value="Computer Science">Computer Science Department</SelectItem>
+                          <SelectItem value="Electronics">Electronics & Communication Department</SelectItem>
+                          <SelectItem value="Mechanical">Mechanical Engineering Department</SelectItem>
+                          <SelectItem value="Civil">Civil Engineering Department</SelectItem>
+                          <SelectItem value="Management">Management Department</SelectItem>
+                          <SelectItem value="IT">IT Department</SelectItem>
+                          <SelectItem value="Administration">Administration</SelectItem>
+                          <SelectItem value="Library">Library</SelectItem>
+                          <SelectItem value="Hostel">Hostel Management</SelectItem>
+                          <SelectItem value="other">Other</SelectItem>
+                        </>
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="signup-year">Student Year</Label>
-                  <Select value={signUpData.year} onValueChange={(value) => setSignUpData(prev => ({ ...prev, year: value }))}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select your year" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="1">1st Year</SelectItem>
-                      <SelectItem value="2">2nd Year</SelectItem>
-                      <SelectItem value="3">3rd Year</SelectItem>
-                      <SelectItem value="4">4th Year</SelectItem>
-                      <SelectItem value="postgrad">Post Graduate</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
+                {signUpData.role === 'student' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="signup-year">Student Year</Label>
+                    <Select value={signUpData.year} onValueChange={(value) => setSignUpData(prev => ({ ...prev, year: value }))}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Select your year" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="1">1st Year</SelectItem>
+                        <SelectItem value="2">2nd Year</SelectItem>
+                        <SelectItem value="3">3rd Year</SelectItem>
+                        <SelectItem value="4">4th Year</SelectItem>
+                        <SelectItem value="postgrad">Post Graduate</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
 
                 <div className="space-y-2">
                   <Label htmlFor="signup-email">Email</Label>

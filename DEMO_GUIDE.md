@@ -29,6 +29,7 @@ Use these credentials to create accounts manually:
 **Login:** student@jecrcu.edu.in / password123
 
 **What to Test:**
+- ✅ **CREATE TICKET BUTTON** prominently displayed in header and dashboard
 - ✅ Create new tickets with different categories (IT, Infrastructure, Housekeeping, etc.)
 - ✅ Upload file attachments to tickets
 - ✅ View ticket status and progress
@@ -46,7 +47,8 @@ Use these credentials to create accounts manually:
 **Login:** staff@jecrcu.edu.in / password123
 
 **What to Test:**
-- ✅ Same permissions as Student role
+- ✅ **EXACT same permissions as Student role**
+- ✅ **CREATE TICKET BUTTON** prominently displayed
 - ✅ Create new tickets with different categories
 - ✅ Upload file attachments to tickets
 - ✅ View ticket status and progress
@@ -63,18 +65,20 @@ Use these credentials to create accounts manually:
 **Login:** resolver@jecrcu.edu.in / password123
 
 **What to Test:**
-- ✅ View assigned tickets
+- ✅ View assigned tickets and department queue
+- ✅ **NO CREATE TICKET BUTTON** (resolvers don't create tickets)
+- ✅ Claim unassigned tickets with action buttons
 - ✅ Update ticket status (Open → In Progress → Resolved)
-- ✅ Assign tickets to yourself
 - ✅ Add internal and public messages
 - ✅ Manage ticket priority levels
-- ✅ View ticket analytics
+- ✅ Department-specific ticket filtering
 
 **Test Scenarios:**
-1. Take ownership of unassigned tickets
-2. Update ticket status through the workflow
-3. Communicate with students via ticket messages
-4. Use internal notes for team coordination
+1. **View ticket queue**: See unassigned tickets in your department
+2. **Claim tickets**: Use "Claim Ticket" button on unassigned tickets
+3. **Status workflow**: Update tickets through Open → In Progress → Resolved
+4. **Action buttons**: Test "View Details", "Update Status", "Mark Resolved"
+5. **Department filtering**: Only see tickets assigned to you or unassigned in your department
 
 ### 👑 Admin Role Features
 **Login:** admin@jecrcu.edu.in / password123

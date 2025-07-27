@@ -8,7 +8,7 @@ const Header = () => {
   const { user, profile, signOut } = useAuth();
 
   return (
-    <header className="bg-white border-b border-border shadow-sm">
+    <header className="bg-white border-b border-primary/10 shadow-md jecrc-header-gradient">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
           {/* Logo and Title */}
@@ -36,6 +36,32 @@ const Header = () => {
             <Link to="/dashboard" className="font-lato text-foreground hover:text-primary transition-colors">
               Dashboard
             </Link>
+            
+            {/* Student/Staff Navigation */}
+            {(user?.role === 'student' || user?.role === 'staff') && (
+              <>
+                <Link to="/create-ticket" className="font-lato text-foreground hover:text-primary transition-colors">
+                  My Tickets
+                </Link>
+                <Link to="/faq" className="font-lato text-foreground hover:text-primary transition-colors">
+                  FAQ
+                </Link>
+              </>
+            )}
+            
+            {/* Resolver Navigation */}
+            {user?.role === 'resolver' && (
+              <>
+                <Link to="/dashboard" className="font-lato text-foreground hover:text-primary transition-colors">
+                  Ticket Queue
+                </Link>
+                <Link to="/faq" className="font-lato text-foreground hover:text-primary transition-colors">
+                  Knowledge Base
+                </Link>
+              </>
+            )}
+            
+            {/* Admin Navigation */}
             {user?.role === 'admin' && (
               <>
                 <Link to="/admin" className="font-lato text-foreground hover:text-primary transition-colors">
@@ -44,10 +70,15 @@ const Header = () => {
                 <Link to="/logs" className="font-lato text-foreground hover:text-primary transition-colors">
                   System Logs
                 </Link>
+                <Link to="/analytics" className="font-lato text-foreground hover:text-primary transition-colors">
+                  Analytics
+                </Link>
               </>
             )}
+            
+            {/* Create Ticket Button */}
             {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
-              <Link to="/create-ticket" className="font-lato bg-primary text-primary-foreground hover:bg-primary/90 px-4 py-2 rounded-md transition-colors font-medium">
+              <Link to="/create-ticket" className="jecrc-btn-primary px-6 py-2 rounded-lg font-semibold text-sm">
                 + Create Ticket
               </Link>
             )}
@@ -81,7 +112,7 @@ const Header = () => {
             <div className="md:hidden flex items-center space-x-2">
               {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
                 <Link to="/create-ticket">
-                  <Button size="sm" className="bg-primary text-primary-foreground hover:bg-primary/90">
+                  <Button size="sm" className="jecrc-btn-primary">
                     + Ticket
                   </Button>
                 </Link>

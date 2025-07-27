@@ -158,7 +158,7 @@ export default function Demo() {
 
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           {demoAccounts.map((account) => (
-            <Card key={account.email} className="hover:shadow-lg transition-shadow">
+            <Card key={account.email} className="jecrc-card-hover jecrc-border-accent">
               <CardHeader className="text-center">
                 <div className={`mx-auto mb-3 w-12 h-12 ${account.color} rounded-full flex items-center justify-center`}>
                   <span className="text-white font-bold">
@@ -185,7 +185,7 @@ export default function Demo() {
                 <Button
                   onClick={() => handleDemoLogin(account.email, account.role)}
                   disabled={isLoading === account.email}
-                  className="w-full"
+                  className="w-full jecrc-btn-primary font-semibold"
                 >
                   {isLoading === account.email ? 'Logging in...' : `Test ${account.role} Portal`}
                 </Button>

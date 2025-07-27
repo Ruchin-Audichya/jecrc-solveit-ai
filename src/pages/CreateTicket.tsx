@@ -171,7 +171,7 @@ export default function CreateTicket() {
                 <Button
                   type="submit"
                   disabled={isSubmitting || !title || !description || !category || !priority || !location}
-                  className="flex-1"
+                  className="flex-1 jecrc-btn-primary font-semibold py-6 text-base"
                 >
                   {isSubmitting ? 'Creating...' : 'Create Ticket'}
                 </Button>
