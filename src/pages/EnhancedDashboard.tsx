@@ -159,6 +159,11 @@ export default function EnhancedDashboard() {
                 'Student'
               }
             </p>
+            {user?.role === 'resolver' && (
+              <p className="text-sm text-muted-foreground mt-2">
+                🎯 Your ticket queue • {userTickets.filter(t => !t.assignedTo).length} unassigned • {userTickets.filter(t => t.assignedTo === user.id).length} assigned to you
+              </p>
+            )}
           </div>
           <div className="flex gap-2">
             {user?.role === 'admin' && (
@@ -168,6 +173,18 @@ export default function EnhancedDashboard() {
                   <User className="h-4 w-4" />
                 </Button>
               </Link>
+            )}
+            {user?.role === 'resolver' && (
+              <div className="flex gap-2">
+                <Button variant="outline" className="gap-2">
+                  <Clock className="h-4 w-4" />
+                  Queue ({userTickets.filter(t => !t.assignedTo).length})
+                </Button>
+                <Button variant="outline" className="gap-2">
+                  <User className="h-4 w-4" />
+                  My Tasks ({userTickets.filter(t => t.assignedTo === user.id).length})
+                </Button>
+              </div>
             )}
             {(user?.role === 'student' || user?.role === 'staff' || user?.role === 'admin') && (
               <Link to="/create-ticket">
@@ -184,7 +201,10 @@ export default function EnhancedDashboard() {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2 text-sm text-muted-foreground">
             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-            Connected to Live Database • {userTickets.length} tickets loaded
+            Connected to Live Database • {userTickets.length} tickets loaded • 
+            {user?.role === 'admin' && 'All system tickets'}
+            {user?.role === 'resolver' && 'Your department queue'}
+            {(user?.role === 'student' || user?.role === 'staff') && 'Your submitted tickets'}
           </div>
           <Button 
             variant="ghost" 
@@ -367,6 +387,83 @@ export default function EnhancedDashboard() {
                   const creator = getUserById(ticket.createdBy);
                   const assignee = ticket.assignedTo ? getUserById(ticket.assignedTo) : null;
                   
+                  // Resolver view with action buttons
+                  if (user?.role === 'resolver') {
+                    return (
+                      <Card key={ticket.id} className="border hover:border-primary/20 transition-all duration-200">
+                        <CardContent className="p-6">
+                          <div className="flex items-start justify-between">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start gap-3 mb-3">
+                                <div className="flex items-center gap-2">
+                                  {getStatusIcon(ticket.status)}
+                                  <h3 className="font-semibold text-foreground text-lg">
+                                    {ticket.title}
+                                  </h3>
+                                </div>
+                                <div className="flex gap-2">
+                                  <Badge variant={getStatusColor(ticket.status)}>
+                                    {ticket.status}
+                                  </Badge>
+                                  <Badge variant={getPriorityColor(ticket.priority)}>
+                                    {ticket.priority}
+                                  </Badge>
+                                </div>
+                              </div>
+                              
+                              <p className="text-muted-foreground mb-4 line-clamp-2">
+                                {ticket.description}
+                              </p>
+                              
+                              <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-4">
+                                <div className="flex items-center gap-1">
+                                  <TicketIcon className="h-3 w-3" />
+                                  <span>#{ticket.id}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <User className="h-3 w-3" />
+                                  <span>{creator?.name || 'Unknown User'}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <Calendar className="h-3 w-3" />
+                                  <span>{new Date(ticket.createdAt).toLocaleDateString()}</span>
+                                </div>
+                                <div className="flex items-center gap-1">
+                                  <span>📍 {ticket.location}</span>
+                                </div>
+                              </div>
+
+                              {/* Resolver Action Buttons */}
+                              <div className="flex gap-2">
+                                <Link to={`/ticket/${ticket.id}`}>
+                                  <Button size="sm" variant="outline">
+                                    View Details
+                                  </Button>
+                                </Link>
+                                {!ticket.assignedTo && (
+                                  <Button size="sm" variant="default">
+                                    Claim Ticket
+                                  </Button>
+                                )}
+                                {ticket.assignedTo === user.id && ticket.status !== 'resolved' && ticket.status !== 'closed' && (
+                                  <Button size="sm" variant="secondary">
+                                    Update Status
+                                  </Button>
+                                )}
+                                {ticket.assignedTo === user.id && ticket.status === 'in-progress' && (
+                                  <Button size="sm" variant="default">
+                                    Mark Resolved
+                                  </Button>
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    );
+                  }
+                  
+                  // Standard view for students, staff, and admin
                   return (
                     <Link key={ticket.id} to={`/ticket/${ticket.id}`}>
                       <Card className="hover:bg-accent transition-all duration-200 cursor-pointer border hover:border-primary/20">
